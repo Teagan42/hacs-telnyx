@@ -52,7 +52,7 @@ class TelnyxClient:
         """Return the configured Call Control connection ID."""
         if not self._call_control_connection_id:
             raise ServiceValidationError(
-                "Configure a Call Control connection ID in the Telnyx config entry"
+                "Configure a Call Control connection ID in the Telnyx config entry."
             )
         return self._call_control_connection_id
 
