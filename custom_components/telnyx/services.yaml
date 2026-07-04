@@ -1,0 +1,110 @@
+send_sms:
+  name: Send SMS
+  description: Send an SMS message with Telnyx.
+  fields:
+    entry_id:
+      selector:
+        text:
+    to:
+      required: true
+      selector:
+        text:
+    from:
+      selector:
+        text:
+    message:
+      required: true
+      selector:
+        text:
+
+send_texml:
+  name: Send TexML voice call
+  description: Start a Telnyx voice call using TexML.
+  fields:
+    entry_id:
+      selector:
+        text:
+    to:
+      required: true
+      selector:
+        text:
+    from:
+      selector:
+        text:
+    texml:
+      required: true
+      selector:
+        text:
+          multiline: true
+
+send_voice_api:
+  name: Send Voice API call
+  description: Start a Telnyx voice API call with spoken text.
+  fields:
+    entry_id:
+      selector:
+        text:
+    to:
+      required: true
+      selector:
+        text:
+    from:
+      selector:
+        text:
+    message:
+      required: true
+      selector:
+        text:
+          multiline: true
+
+send_dtmf:
+  name: Send DTMF
+  description: Send DTMF digits to an active Telnyx call.
+  fields:
+    entry_id:
+      selector:
+        text:
+    call_control_id:
+      required: true
+      selector:
+        text:
+    digits:
+      required: true
+      selector:
+        text:
+
+start_recording:
+  name: Start recording
+  description: Start recording an active Telnyx call.
+  fields:
+    entry_id:
+      selector:
+        text:
+    call_control_id:
+      required: true
+      selector:
+        text:
+    format:
+      selector:
+        select:
+          options:
+            - wav
+            - mp3
+    channels:
+      selector:
+        select:
+          options:
+            - single
+            - dual
+
+stop_recording:
+  name: Stop recording
+  description: Stop recording an active Telnyx call.
+  fields:
+    entry_id:
+      selector:
+        text:
+    call_control_id:
+      required: true
+      selector:
+        text:
