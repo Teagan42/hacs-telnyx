@@ -9,6 +9,7 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.telnyx.const import (
     CONF_API_KEY,
+    CONF_CALL_CONTROL_CONNECTION_ID,
     CONF_DEFAULT_MESSAGING_FROM,
     CONF_DEFAULT_MESSAGING_TO,
     CONF_DEFAULT_VOICE_FROM,
@@ -40,6 +41,7 @@ def config_entry(webhook_keys) -> MockConfigEntry:
         entry_id="entry-1",
         data={
             CONF_API_KEY: "test-api-key",
+            CONF_CALL_CONTROL_CONNECTION_ID: "conn-123",
             CONF_DEFAULT_MESSAGING_FROM: "+15550000001",
             CONF_DEFAULT_MESSAGING_TO: "+15550000002",
             CONF_DEFAULT_VOICE_FROM: "+15550000003",

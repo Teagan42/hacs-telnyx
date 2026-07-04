@@ -12,6 +12,7 @@ from homeassistant import config_entries
 
 from .const import (
     CONF_API_KEY,
+    CONF_CALL_CONTROL_CONNECTION_ID,
     CONF_DEFAULT_MESSAGING_FROM,
     CONF_DEFAULT_MESSAGING_TO,
     CONF_DEFAULT_VOICE_FROM,
@@ -28,6 +29,7 @@ STEP_USER_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_API_KEY): str,
         vol.Required(CONF_WEBHOOK_PUBLIC_KEY): str,
+        vol.Optional(CONF_CALL_CONTROL_CONNECTION_ID): str,
         vol.Optional(CONF_MESSAGING_PROFILE_ID): str,
         vol.Optional(CONF_DEFAULT_MESSAGING_FROM): str,
         vol.Optional(CONF_DEFAULT_MESSAGING_TO): str,

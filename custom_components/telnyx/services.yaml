@@ -19,7 +19,7 @@ send_sms:
 
 send_texml:
   name: Send TeXML voice call
-  description: Start a Telnyx voice call using TeXML.
+  description: Start a Call Control voice call using inline TeXML.
   fields:
     entry_id:
       selector:
@@ -39,7 +39,7 @@ send_texml:
 
 send_voice_api:
   name: Send Voice API call
-  description: Start a Telnyx voice API call with spoken text.
+  description: Start a Call Control voice call and send a speak action.
   fields:
     entry_id:
       selector:

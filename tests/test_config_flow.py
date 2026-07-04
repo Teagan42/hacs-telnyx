@@ -11,6 +11,7 @@ async def test_user_flow_creates_entry(hass, webhook_keys) -> None:
         context={"source": "user"},
         data={
             "api_key": "secret",
+            "call_control_connection_id": "conn-123",
             "webhook_public_key": public_key,
             "default_messaging_to": "+15550000002",
             "default_voice_to": "+15550000004",

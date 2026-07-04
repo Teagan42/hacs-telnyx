@@ -10,6 +10,7 @@
         "data": {
           "api_key": "API key",
           "webhook_public_key": "Webhook public key",
+          "call_control_connection_id": "Call Control connection ID",
           "messaging_profile_id": "Messaging profile ID",
           "default_messaging_from": "Default messaging from number",
           "default_messaging_to": "Default messaging to number",

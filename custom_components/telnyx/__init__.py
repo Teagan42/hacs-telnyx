@@ -35,6 +35,7 @@ from .const import (
     ATTR_TO,
     ATTR_TRANSCRIPTION,
     CONF_API_KEY,
+    CONF_CALL_CONTROL_CONNECTION_ID,
     CONF_MESSAGING_PROFILE_ID,
     CONF_WEBHOOK_ID,
     CONF_WEBHOOK_PUBLIC_KEY,
@@ -76,6 +77,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: TelnyxConfigEntry) -> bo
             hass,
             entry.data[CONF_API_KEY],
             entry.data.get(CONF_MESSAGING_PROFILE_ID),
+            entry.data.get(CONF_CALL_CONTROL_CONNECTION_ID),
         ),
         webhook_id=entry.data[CONF_WEBHOOK_ID],
     )

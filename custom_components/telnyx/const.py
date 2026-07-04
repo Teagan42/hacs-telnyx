@@ -6,6 +6,7 @@ DOMAIN = "telnyx"
 PLATFORMS = (Platform.NOTIFY,)
 
 CONF_API_KEY = "api_key"
+CONF_CALL_CONTROL_CONNECTION_ID = "call_control_connection_id"
 CONF_DEFAULT_MESSAGING_FROM = "default_messaging_from"
 CONF_DEFAULT_MESSAGING_TO = "default_messaging_to"
 CONF_DEFAULT_VOICE_FROM = "default_voice_from"
