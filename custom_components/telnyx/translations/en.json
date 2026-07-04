@@ -1,0 +1,36 @@
+{
+  "config": {
+    "abort": {
+      "already_configured": "This Telnyx account is already configured."
+    },
+    "step": {
+      "user": {
+        "title": "Connect Telnyx",
+        "description": "Configure Telnyx defaults for messaging, voice, and webhook automations.",
+        "data": {
+          "api_key": "API key",
+          "webhook_public_key": "Webhook public key",
+          "call_control_connection_id": "Call Control connection ID",
+          "messaging_profile_id": "Messaging profile ID",
+          "default_messaging_from": "Default messaging from number",
+          "default_messaging_to": "Default messaging to number",
+          "default_voice_from": "Default voice from number",
+          "default_voice_to": "Default voice to number"
+        }
+      }
+    }
+  },
+  "entity": {
+    "notify": {
+      "messaging": {
+        "name": "Messaging"
+      },
+      "voice_texml": {
+        "name": "Voice TeXML"
+      },
+      "voice_api": {
+        "name": "Voice API"
+      }
+    }
+  }
+}

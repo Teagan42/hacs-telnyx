@@ -1,0 +1,13 @@
+{
+  "domain": "telnyx",
+  "name": "Telnyx",
+  "after_dependencies": ["http"],
+  "codeowners": ["@Teagan42"],
+  "config_flow": true,
+  "documentation": "https://github.com/Teagan42/hacs-telnyx",
+  "integration_type": "service",
+  "iot_class": "cloud_push",
+  "issue_tracker": "https://github.com/Teagan42/hacs-telnyx/issues",
+  "requirements": ["cryptography>=48.0.1"],
+  "version": "0.1.0"
+}
