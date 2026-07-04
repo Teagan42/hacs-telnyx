@@ -26,17 +26,30 @@ class TelnyxClient:
         self._messaging_profile_id = messaging_profile_id
         self._call_control_connection_id = call_control_connection_id
 
-    async def _request(self, method: str, path: str, payload: dict[str, Any]) -> dict[str, Any]:
+    async def _request(
+        self,
+        method: str,
+        path: str,
+        payload: dict[str, Any] | None = None,
+        *,
+        data: dict[str, Any] | None = None,
+        content_type: str = "application/json",
+    ) -> dict[str, Any]:
         """Perform an API request."""
         session = async_get_clientsession(self._hass)
+        request_kwargs: dict[str, Any]
+        if data is not None:
+            request_kwargs = {"data": data}
+        else:
+            request_kwargs = {"json": payload or {}}
         async with session.request(
             method,
             f"https://api.telnyx.com/v2{path}",
             headers={
-                "Authorization": f"Bearer {self._api_key}",
-                "Content-Type": "application/json",
+                "Authorization": "Bearer " + self._api_key,
+                "Content-Type": content_type,
             },
-            json=payload,
+            **request_kwargs,
         ) as response:
             if response.status >= 400:
                 raise ClientResponseError(
@@ -77,14 +90,15 @@ class TelnyxClient:
         from_number: str | None = None,
     ) -> dict[str, Any]:
         """Start a voice call backed by TeXML."""
-        payload: dict[str, Any] = {
-            "connection_id": self._require_connection_id(),
-            "to": to_number,
-            "texml": texml,
-        }
+        payload: dict[str, Any] = {"To": to_number, "Texml": texml}
         if from_number:
-            payload["from"] = from_number
-        return await self._request("post", "/calls", payload)
+            payload["From"] = from_number
+        return await self._request(
+            "post",
+            f"/texml/calls/{self._require_connection_id()}",
+            data=payload,
+            content_type="application/x-www-form-urlencoded",
+        )
 
     async def send_voice_api_call(
         self,

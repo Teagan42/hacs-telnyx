@@ -10,6 +10,10 @@ EXPECTED_HEADERS = {
     "Authorization": "Bearer " + "test-api-key",
     "Content-Type": "application/json",
 }
+EXPECTED_FORM_HEADERS = {
+    "Authorization": "Bearer " + "test-api-key",
+    "Content-Type": "application/x-www-form-urlencoded",
+}
 
 
 class _MockResponse:
@@ -74,8 +78,8 @@ async def test_send_sms_uses_raw_json_payload(hass) -> None:
     ]
 
 
-async def test_send_texml_call_uses_inline_texml_on_calls_endpoint(hass) -> None:
-    """Test that TeXML calls use the Call Control create-call endpoint."""
+async def test_send_texml_call_uses_texml_endpoint_and_form_payload(hass) -> None:
+    """Test that TeXML calls use the TeXML endpoint and form payload."""
     requests: list[tuple[str, str, dict]] = []
     session = MagicMock()
 
@@ -96,14 +100,13 @@ async def test_send_texml_call_uses_inline_texml_on_calls_endpoint(hass) -> None
     assert requests == [
         (
             "post",
-            "https://api.telnyx.com/v2/calls",
+            "https://api.telnyx.com/v2/texml/calls/conn-123",
             {
-                "headers": EXPECTED_HEADERS,
-                "json": {
-                    "connection_id": "conn-123",
-                    "to": "+15550000004",
-                    "texml": "<Response />",
-                    "from": "+15550000003",
+                "headers": EXPECTED_FORM_HEADERS,
+                "data": {
+                    "To": "+15550000004",
+                    "Texml": "<Response />",
+                    "From": "+15550000003",
                 },
             },
         )

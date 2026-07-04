@@ -19,7 +19,7 @@ send_sms:
 
 send_texml:
   name: Send TeXML voice call
-  description: Start a Call Control voice call using inline TeXML.
+  description: Start an outbound TeXML voice call.
   fields:
     entry_id:
       selector:
