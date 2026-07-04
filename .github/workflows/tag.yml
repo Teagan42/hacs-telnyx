@@ -26,8 +26,8 @@ jobs:
       - name: Bump patch version in manifest.json
         id: bump
         run: |
-          python - <<'PYEOF'
-          import json, sys
+          NEW_VERSION=$(python - <<'PYEOF'
+          import json
 
           manifest_path = "custom_components/telnyx/manifest.json"
           with open(manifest_path) as f:
@@ -42,8 +42,7 @@ jobs:
 
           print(manifest["version"], end="")
           PYEOF
-
-          NEW_VERSION=$(python -c "import json; print(json.load(open('custom_components/telnyx/manifest.json'))['version'])")
+          )
           echo "version=${NEW_VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: Commit version bump

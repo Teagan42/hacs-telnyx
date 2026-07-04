@@ -20,11 +20,15 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.event.workflow_run.head_sha }}
 
-      - name: Get latest tag
+      - name: Get tag at workflow-run commit
         id: get_tag
         run: |
           git fetch --tags
-          TAG=$(git describe --tags --abbrev=0)
+          TAG=$(git tag --points-at "${{ github.event.workflow_run.head_sha }}" | grep '^v' | head -n 1)
+          if [ -z "$TAG" ]; then
+            echo "No version tag found at commit ${{ github.event.workflow_run.head_sha }}" >&2
+            exit 1
+          fi
           echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
 
       - name: Create GitHub release
