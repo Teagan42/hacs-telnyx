@@ -54,4 +54,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: home-assistant/actions/helpers/hassfest@master
+      - uses: home-assistant/actions/hassfest@master
