@@ -1,6 +1,6 @@
 {
   "name": "Telnyx",
-  "domains": ["telnyx"],
+  "domain": "telnyx",
   "homeassistant": "2024.1.0",
   "render_readme": true
 }
