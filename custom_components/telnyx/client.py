@@ -60,7 +60,7 @@ class TelnyxClient:
         texml: str,
         from_number: str | None = None,
     ) -> dict[str, Any]:
-        """Start a voice call backed by TexML."""
+        """Start a voice call backed by TeXML."""
         payload: dict[str, Any] = {"to": to_number, "texml": texml}
         if from_number:
             payload["from"] = from_number

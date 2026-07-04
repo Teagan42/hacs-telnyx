@@ -12,6 +12,7 @@ CONF_DEFAULT_VOICE_FROM = "default_voice_from"
 CONF_DEFAULT_VOICE_TO = "default_voice_to"
 CONF_MESSAGING_PROFILE_ID = "messaging_profile_id"
 CONF_WEBHOOK_ID = "webhook_id"
+CONF_WEBHOOK_PUBLIC_KEY = "webhook_public_key"
 
 ATTR_CALL_CONTROL_ID = "call_control_id"
 ATTR_CHANNELS = "channels"

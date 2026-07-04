@@ -1,8 +1,11 @@
 """Tests for Telnyx setup and services."""
 
+import base64
+import time
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
 
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from homeassistant.helpers import entity_registry as er
 
 from custom_components.telnyx import _async_handle_webhook
@@ -57,6 +60,21 @@ def _entity_id_by_unique_id(hass, config_entry, unique_id: str) -> str:
         if entry.unique_id == unique_id:
             return entry.entity_id
     raise AssertionError(f"Could not find entity for {unique_id}")
+
+
+def _signed_request(private_key: Ed25519PrivateKey, payload: str) -> SimpleNamespace:
+    """Build a signed webhook request."""
+    timestamp = str(int(time.time()))
+    signature = base64.b64encode(
+        private_key.sign(f"{timestamp}|{payload}".encode("utf-8"))
+    ).decode("utf-8")
+    return SimpleNamespace(
+        headers={
+            "telnyx-timestamp": timestamp,
+            "telnyx-signature-ed25519": signature,
+        },
+        text=AsyncMock(return_value=payload),
+    )
 
 
 async def test_notify_entities_send_messages(hass, config_entry) -> None:
@@ -120,8 +138,9 @@ async def test_notify_entities_send_messages(hass, config_entry) -> None:
     send_voice_api.assert_awaited_once_with("+15550000004", "Hello", "+15550000003")
 
 
-async def test_services_and_webhook_events(hass, config_entry) -> None:
+async def test_services_and_webhook_events(hass, config_entry, webhook_keys) -> None:
     """Test domain services and transcription webhook events."""
+    private_key, _ = webhook_keys
     with (
         patch(
             "custom_components.telnyx.client.TelnyxClient.send_sms",
@@ -194,19 +213,11 @@ async def test_services_and_webhook_events(hass, config_entry) -> None:
         hass.bus.async_listen(EVENT_TELNYX, telnyx_events.append)
         hass.bus.async_listen(EVENT_TELNYX_TRANSCRIPTION, transcription_events.append)
 
-        request = SimpleNamespace(
-            json=AsyncMock(
-                return_value={
-                    "data": {
-                        "event_type": "call.transcription",
-                        "payload": {
-                            "call_control_id": "call-4",
-                            "transcription": "press one",
-                        },
-                    }
-                }
-            )
+        payload = (
+            '{"data":{"event_type":"call.transcription","payload":'
+            '{"call_control_id":"call-4","transcription":"press one"}}}'
         )
+        request = _signed_request(private_key, payload)
         response = await _async_handle_webhook(hass, "webhook-123", request)
         await hass.async_block_till_done()
 

@@ -18,6 +18,7 @@ from .const import (
     CONF_DEFAULT_VOICE_TO,
     CONF_MESSAGING_PROFILE_ID,
     CONF_WEBHOOK_ID,
+    CONF_WEBHOOK_PUBLIC_KEY,
     DEFAULT_NAME,
     DOMAIN,
 )
@@ -26,6 +27,7 @@ from .const import (
 STEP_USER_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_API_KEY): str,
+        vol.Required(CONF_WEBHOOK_PUBLIC_KEY): str,
         vol.Optional(CONF_MESSAGING_PROFILE_ID): str,
         vol.Optional(CONF_DEFAULT_MESSAGING_FROM): str,
         vol.Optional(CONF_DEFAULT_MESSAGING_TO): str,

@@ -2,8 +2,14 @@
 
 from __future__ import annotations
 
+import base64
 from dataclasses import dataclass
+import json
+from json import JSONDecodeError
+import time
 from typing import Any
+from cryptography.exceptions import InvalidSignature
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 
 from aiohttp import web
 import voluptuous as vol
@@ -31,6 +37,7 @@ from .const import (
     CONF_API_KEY,
     CONF_MESSAGING_PROFILE_ID,
     CONF_WEBHOOK_ID,
+    CONF_WEBHOOK_PUBLIC_KEY,
     DOMAIN,
     EVENT_TELNYX,
     EVENT_TELNYX_TRANSCRIPTION,
@@ -263,7 +270,6 @@ async def _async_handle_webhook(
     request: web.Request,
 ) -> web.Response:
     """Handle Telnyx webhook callbacks."""
-    payload = await request.json()
     entry_id = next(
         (
             config_entry_id
@@ -272,6 +278,23 @@ async def _async_handle_webhook(
         ),
         None,
     )
+    if entry_id is None:
+        return web.json_response({"status": "not_found"}, status=404)
+
+    config_entry = hass.config_entries.async_get_entry(entry_id)
+    raw_body = await request.text()
+    if not _verify_webhook_signature(
+        raw_body,
+        request.headers,
+        config_entry.data[CONF_WEBHOOK_PUBLIC_KEY],
+    ):
+        return web.json_response({"status": "invalid_signature"}, status=401)
+
+    try:
+        payload = json.loads(raw_body or "{}")
+    except JSONDecodeError:
+        return web.json_response({"status": "invalid_payload"}, status=400)
+
     event_type = (
         payload.get("data", {}).get("event_type")
         or payload.get("event_type")
@@ -298,6 +321,44 @@ async def _async_handle_webhook(
         )
 
     return web.json_response({"status": "ok"})
+
+
+def _verify_webhook_signature(
+    raw_body: str,
+    headers: Any,
+    public_key: str,
+) -> bool:
+    """Verify a Telnyx webhook signature."""
+    signature = _get_header(headers, "telnyx-signature-ed25519")
+    timestamp = _get_header(headers, "telnyx-timestamp")
+    if not signature or not timestamp:
+        return False
+
+    try:
+        if abs(int(time.time()) - int(timestamp)) > 300:
+            return False
+        verify_key = Ed25519PublicKey.from_public_bytes(base64.b64decode(public_key))
+    except (ValueError, TypeError):
+        return False
+
+    signed_payload = f"{timestamp}|{raw_body}".encode("utf-8")
+    for candidate in [item.strip() for item in signature.split(",") if item.strip()]:
+        try:
+            verify_key.verify(base64.b64decode(candidate), signed_payload)
+            return True
+        except (InvalidSignature, ValueError):
+            continue
+
+    return False
+
+
+def _get_header(headers: Any, key: str) -> str | None:
+    """Fetch a header value case-insensitively."""
+    key_lower = key.lower()
+    for header_key, header_value in headers.items():
+        if header_key.lower() == key_lower:
+            return header_value
+    return None
 
 
 def _extract_call_control_id(payload: dict[str, Any]) -> str | None:

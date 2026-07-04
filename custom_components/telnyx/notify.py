@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from html import escape
 from typing import override
 
 from homeassistant.components.notify import NotifyEntity, NotifyEntityFeature
@@ -30,7 +31,7 @@ async def async_setup_entry(
     async_add_entities(
         [
             TelnyxMessagingNotifyEntity(entry),
-            TelnyxTexMLNotifyEntity(entry),
+            TelnyxTeXMLNotifyEntity(entry),
             TelnyxVoiceApiNotifyEntity(entry),
         ]
     )
@@ -85,8 +86,8 @@ class TelnyxMessagingNotifyEntity(TelnyxBaseNotifyEntity):
         )
 
 
-class TelnyxTexMLNotifyEntity(TelnyxBaseNotifyEntity):
-    """Telnyx TexML voice notify entity."""
+class TelnyxTeXMLNotifyEntity(TelnyxBaseNotifyEntity):
+    """Telnyx TeXML voice notify entity."""
 
     def __init__(self, entry: ConfigEntry) -> None:
         """Initialize the entity."""
@@ -94,11 +95,11 @@ class TelnyxTexMLNotifyEntity(TelnyxBaseNotifyEntity):
 
     @override
     async def async_send_message(self, message: str, title: str | None = None) -> None:
-        """Send a voice call using TexML."""
+        """Send a voice call using TeXML."""
         texml = message.strip()
         if not texml.startswith("<"):
             combined = f"{title}. {message}" if title else message
-            texml = f"<Response><Say>{combined}</Say></Response>"
+            texml = f"<Response><Say>{escape(combined)}</Say></Response>"
 
         await self._client.send_texml_call(
             self._require_value(CONF_DEFAULT_VOICE_TO, "a default voice target"),

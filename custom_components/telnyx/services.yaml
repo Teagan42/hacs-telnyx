@@ -18,8 +18,8 @@ send_sms:
         text:
 
 send_texml:
-  name: Send TexML voice call
-  description: Start a Telnyx voice call using TexML.
+  name: Send TeXML voice call
+  description: Start a Telnyx voice call using TeXML.
   fields:
     entry_id:
       selector:

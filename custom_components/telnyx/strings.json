@@ -9,6 +9,7 @@
         "description": "Configure Telnyx defaults for messaging, voice, and webhook automations.",
         "data": {
           "api_key": "API key",
+          "webhook_public_key": "Webhook public key",
           "messaging_profile_id": "Messaging profile ID",
           "default_messaging_from": "Default messaging from number",
           "default_messaging_to": "Default messaging to number",
@@ -24,7 +25,7 @@
         "name": "Messaging"
       },
       "voice_texml": {
-        "name": "Voice TexML"
+        "name": "Voice TeXML"
       },
       "voice_api": {
         "name": "Voice API"

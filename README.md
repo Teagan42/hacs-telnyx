@@ -10,7 +10,7 @@ HACS installable Telnyx Home Assistant component with ConfigFlow setup, Telnyx w
 - ConfigFlow-based setup for Telnyx credentials and default voice/messaging targets
 - Notify entities for:
   - Messaging
-  - Voice TexML
+  - Voice TeXML
   - Voice API
 - Domain services for:
   - `telnyx.send_sms`
@@ -20,6 +20,7 @@ HACS installable Telnyx Home Assistant component with ConfigFlow setup, Telnyx w
   - `telnyx.start_recording`
   - `telnyx.stop_recording`
 - Automatic Home Assistant webhook registration
+- Verified Telnyx webhook handling with transcription events for automations
 - Webhook events for general Telnyx payloads and transcription-driven automations
 
 ## Automation example
