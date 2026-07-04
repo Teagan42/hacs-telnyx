@@ -37,11 +37,9 @@ class TelnyxClient:
     ) -> dict[str, Any]:
         """Perform an API request."""
         session = async_get_clientsession(self._hass)
-        request_kwargs: dict[str, Any]
-        if data is not None:
-            request_kwargs = {"data": data}
-        else:
-            request_kwargs = {"json": payload or {}}
+        if payload is not None and data is not None:
+            raise ValueError("Use payload for JSON requests or data for form requests")
+        request_kwargs = {"data": data} if data is not None else {"json": payload or {}}
         async with session.request(
             method,
             f"https://api.telnyx.com/v2{path}",
