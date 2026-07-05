@@ -2,7 +2,7 @@
 
 HACS installable Telnyx Home Assistant component with ConfigFlow setup, Telnyx webhook handling, notify entities for messaging and voice, and automation-friendly services for DTMF and recording control.
 
-[![Open your Home Assistant instance and add this repository to HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?repository=https://github.com/Teagan42/hacs-telnyx)
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=constructorfleet&repository=hacs-telnyx&category=integration)
 [![Open your Home Assistant instance and start setting up Telnyx](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=telnyx)
 
 ## Features
