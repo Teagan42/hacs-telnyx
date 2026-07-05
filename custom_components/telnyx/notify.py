@@ -19,6 +19,8 @@ from .const import (
     CONF_DEFAULT_VOICE_TO,
     DEFAULT_NAME,
     DOMAIN,
+    MESSAGING_KEYS,
+    VOICE_KEYS,
 )
 
 
@@ -28,20 +30,26 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up Telnyx notify entities."""
-    async_add_entities(
-        [
-            TelnyxMessagingNotifyEntity(entry),
-            TelnyxTeXMLNotifyEntity(entry),
-            TelnyxVoiceApiNotifyEntity(entry),
-        ]
-    )
+    entities: list[TelnyxBaseNotifyEntity] = []
+
+    if any(entry.data.get(key) for key in MESSAGING_KEYS):
+        entities.append(TelnyxMessagingNotifyEntity(entry))
+
+    if any(entry.data.get(key) for key in VOICE_KEYS):
+        entities.extend(
+            [
+                TelnyxTeXMLNotifyEntity(entry),
+                TelnyxVoiceApiNotifyEntity(entry),
+            ]
+        )
+
+    async_add_entities(entities)
 
 
 class TelnyxBaseNotifyEntity(NotifyEntity):
     """Base class for Telnyx notify entities."""
 
     _attr_has_entity_name = True
-    _attr_name = None
     _attr_should_poll = False
     _attr_supported_features = NotifyEntityFeature.TITLE
 

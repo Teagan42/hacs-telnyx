@@ -52,6 +52,24 @@ def config_entry(webhook_keys) -> MockConfigEntry:
     )
 
 
+@pytest.fixture
+def config_entry_messaging_only(webhook_keys) -> MockConfigEntry:
+    """Create a Telnyx config entry with only messaging configured."""
+    _, public_key = webhook_keys
+    return MockConfigEntry(
+        domain=DOMAIN,
+        title="Telnyx",
+        entry_id="entry-2",
+        data={
+            CONF_API_KEY: "test-api-key",
+            CONF_DEFAULT_MESSAGING_FROM: "+15550000001",
+            CONF_DEFAULT_MESSAGING_TO: "+15550000002",
+            CONF_WEBHOOK_ID: "webhook-456",
+            CONF_WEBHOOK_PUBLIC_KEY: public_key,
+        },
+    )
+
+
 @pytest.fixture(autouse=True)
 def auto_enable_custom_integrations(enable_custom_integrations):
     """Enable loading integrations from this repository."""
