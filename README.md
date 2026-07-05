@@ -23,6 +23,50 @@ HACS installable Telnyx Home Assistant component with ConfigFlow setup, Telnyx w
 - Verified Telnyx webhook handling with transcription events for automations
 - Webhook events for general Telnyx payloads and transcription-driven automations
 
+## Events fired by webhooks
+
+Every verified incoming Telnyx webhook fires one or both of the following Home Assistant events, which automations can trigger off of.
+
+### `telnyx_event`
+
+Fired for **every** valid incoming webhook payload.
+
+| Field | Description |
+|---|---|
+| `entry_id` | Config entry that received the webhook |
+| `event_type` | Telnyx event type string (e.g. `message.received`, `call.initiated`) |
+| `payload` | Full raw webhook payload |
+
+```yaml
+trigger:
+  - platform: event
+    event_type: telnyx_event
+    event_data:
+      event_type: message.received  # optional — omit to match all events
+```
+
+The full payload is available as `{{ trigger.event.data.payload }}` inside the automation.
+
+### `telnyx_transcription`
+
+Fired only when the webhook payload contains a transcription string (e.g. after a call transcription completes).
+
+| Field | Description |
+|---|---|
+| `entry_id` | Config entry that received the webhook |
+| `event_type` | Telnyx event type string |
+| `payload` | Full raw webhook payload |
+| `transcription` | Extracted transcription text |
+| `call_control_id` | Associated call control ID |
+
+```yaml
+trigger:
+  - platform: event
+    event_type: telnyx_transcription
+```
+
+The transcription text is available as `{{ trigger.event.data.transcription }}` inside the automation.
+
 ## Automation example
 
 Listen for the `telnyx_transcription` event and then call `telnyx.send_dtmf`, `telnyx.start_recording`, or `telnyx.stop_recording` in your automation.
