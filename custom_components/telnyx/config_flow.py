@@ -92,6 +92,19 @@ class TelnyxConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             if action == ACTION_BACK:
                 return await self.async_step_user()
 
+            if keys == REQUIRED_COMMON_KEYS and (
+                any(key in user_input and not user_input[key] for key in REQUIRED_COMMON_KEYS)
+                or any(
+                    key not in user_input and key not in self._data
+                    for key in REQUIRED_COMMON_KEYS
+                )
+            ):
+                return self.async_show_form(
+                    step_id=step_id,
+                    data_schema=self._build_schema(keys),
+                    errors={"base": "missing_required_common"},
+                )
+
             self._store_step_values(keys, user_input)
             return await self.async_step_user()
 
