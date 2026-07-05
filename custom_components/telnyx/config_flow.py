@@ -9,6 +9,7 @@ from typing import Any
 import voluptuous as vol
 
 from homeassistant import config_entries
+from homeassistant.helpers import selector
 
 from .const import (
     CONF_API_KEY,
@@ -39,6 +40,9 @@ MESSAGING_KEYS = (
     CONF_DEFAULT_MESSAGING_FROM,
     CONF_DEFAULT_MESSAGING_TO,
 )
+STEP_ACTION_SELECTOR = selector.SelectSelector(
+    selector.SelectSelectorConfig(options=[ACTION_SAVE, ACTION_BACK])
+)
 
 
 class TelnyxConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -64,9 +68,7 @@ class TelnyxConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         schema = vol.Schema(
             {
                 **{vol.Optional(key): str for key in keys},
-                vol.Required(CONF_STEP_ACTION, default=ACTION_SAVE): vol.In(
-                    [ACTION_SAVE, ACTION_BACK]
-                ),
+                vol.Required(CONF_STEP_ACTION, default=ACTION_SAVE): STEP_ACTION_SELECTOR,
             }
         )
         return self.add_suggested_values_to_schema(schema, self._data)
@@ -118,7 +120,7 @@ class TelnyxConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         self, user_input: dict[str, Any] | None = None
     ) -> config_entries.ConfigFlowResult:
         """Finalize configuration."""
-        if any(not self._data.get(key) for key in REQUIRED_COMMON_KEYS):
+        if any(key not in self._data for key in REQUIRED_COMMON_KEYS):
             return self.async_show_form(
                 step_id="common",
                 data_schema=self._build_schema(COMMON_KEYS),

@@ -39,7 +39,7 @@ async def test_user_flow_creates_entry(hass, webhook_keys) -> None:
 
     result = await hass.config_entries.flow.async_configure(
         result["flow_id"],
-        data={
+        {
             "call_control_connection_id": "conn-123",
             "default_voice_to": "+15550000004",
             "step_action": "save",
