@@ -29,7 +29,6 @@ CONF_STEP_ACTION = "step_action"
 ACTION_BACK = "back"
 ACTION_SAVE = "save"
 REQUIRED_COMMON_KEYS = (CONF_API_KEY, CONF_WEBHOOK_PUBLIC_KEY)
-COMMON_KEYS = (CONF_API_KEY, CONF_WEBHOOK_PUBLIC_KEY)
 VOICE_KEYS = (
     CONF_CALL_CONTROL_CONNECTION_ID,
     CONF_DEFAULT_VOICE_FROM,
@@ -102,7 +101,7 @@ class TelnyxConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         self, user_input: dict[str, Any] | None = None
     ) -> config_entries.ConfigFlowResult:
         """Handle common settings."""
-        return await self._handle_section_step("common", COMMON_KEYS, user_input)
+        return await self._handle_section_step("common", REQUIRED_COMMON_KEYS, user_input)
 
     async def async_step_voice(
         self, user_input: dict[str, Any] | None = None
@@ -123,7 +122,7 @@ class TelnyxConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if any(key not in self._data for key in REQUIRED_COMMON_KEYS):
             return self.async_show_form(
                 step_id="common",
-                data_schema=self._build_schema(COMMON_KEYS),
+                data_schema=self._build_schema(REQUIRED_COMMON_KEYS),
                 errors={"base": "missing_required_common"},
             )
 
