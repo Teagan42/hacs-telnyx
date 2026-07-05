@@ -53,6 +53,25 @@ async def test_setup_entry_registers_entities_and_services(hass, config_entry) -
         assert hass.services.has_service(DOMAIN, service)
 
 
+async def test_setup_entry_only_creates_configured_entities(
+    hass, config_entry_messaging_only
+) -> None:
+    """Test that only entities for configured features are created."""
+    config_entry_messaging_only.add_to_hass(hass)
+
+    assert await hass.config_entries.async_setup(config_entry_messaging_only.entry_id)
+    await hass.async_block_till_done()
+
+    entity_registry = er.async_get(hass)
+    entries = er.async_entries_for_config_entry(
+        entity_registry, config_entry_messaging_only.entry_id
+    )
+    unique_ids = {entry.unique_id for entry in entries}
+    assert unique_ids == {"entry-2_messaging"}
+    assert "entry-2_voice_api" not in unique_ids
+    assert "entry-2_voice_texml" not in unique_ids
+
+
 def _entity_id_by_unique_id(hass, config_entry, unique_id: str) -> str:
     """Look up an entity_id by unique_id."""
     entity_registry = er.async_get(hass)
