@@ -24,18 +24,20 @@ from .const import (
     DOMAIN,
 )
 
-
-STEP_USER_SCHEMA = vol.Schema(
-    {
-        vol.Required(CONF_API_KEY): str,
-        vol.Required(CONF_WEBHOOK_PUBLIC_KEY): str,
-        vol.Optional(CONF_CALL_CONTROL_CONNECTION_ID): str,
-        vol.Optional(CONF_MESSAGING_PROFILE_ID): str,
-        vol.Optional(CONF_DEFAULT_MESSAGING_FROM): str,
-        vol.Optional(CONF_DEFAULT_MESSAGING_TO): str,
-        vol.Optional(CONF_DEFAULT_VOICE_FROM): str,
-        vol.Optional(CONF_DEFAULT_VOICE_TO): str,
-    }
+CONF_STEP_ACTION = "step_action"
+ACTION_BACK = "back"
+ACTION_SAVE = "save"
+REQUIRED_COMMON_KEYS = (CONF_API_KEY, CONF_WEBHOOK_PUBLIC_KEY)
+COMMON_KEYS = (CONF_API_KEY, CONF_WEBHOOK_PUBLIC_KEY)
+VOICE_KEYS = (
+    CONF_CALL_CONTROL_CONNECTION_ID,
+    CONF_DEFAULT_VOICE_FROM,
+    CONF_DEFAULT_VOICE_TO,
+)
+MESSAGING_KEYS = (
+    CONF_MESSAGING_PROFILE_ID,
+    CONF_DEFAULT_MESSAGING_FROM,
+    CONF_DEFAULT_MESSAGING_TO,
 )
 
 
@@ -44,23 +46,93 @@ class TelnyxConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     VERSION = 1
 
+    def __init__(self) -> None:
+        """Initialize the flow."""
+        self._data: dict[str, str] = {}
+
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
     ) -> config_entries.ConfigFlowResult:
-        """Handle the initial step."""
-        if user_input is not None:
-            unique_id = hashlib.sha256(
-                user_input[CONF_API_KEY].encode("utf-8")
-            ).hexdigest()
-            await self.async_set_unique_id(unique_id)
-            self._abort_if_unique_id_configured()
+        """Show the config menu."""
+        return self.async_show_menu(
+            step_id="user",
+            menu_options=["common", "voice", "messaging", "done"],
+        )
 
-            return self.async_create_entry(
-                title=DEFAULT_NAME,
-                data={
-                    **{key: value for key, value in user_input.items() if value},
-                    CONF_WEBHOOK_ID: secrets.token_hex(16),
-                },
+    def _build_schema(self, keys: tuple[str, ...]) -> vol.Schema:
+        """Build schema for a configurable section."""
+        schema = vol.Schema(
+            {
+                **{vol.Optional(key): str for key in keys},
+                vol.Required(CONF_STEP_ACTION, default=ACTION_SAVE): vol.In(
+                    [ACTION_SAVE, ACTION_BACK]
+                ),
+            }
+        )
+        return self.add_suggested_values_to_schema(schema, self._data)
+
+    def _store_step_values(self, keys: tuple[str, ...], user_input: dict[str, Any]) -> None:
+        """Store user values for the current section."""
+        for key in keys:
+            if key not in user_input:
+                continue
+            value = user_input[key]
+            if value:
+                self._data[key] = value
+                continue
+            self._data.pop(key, None)
+
+    async def _handle_section_step(
+        self, step_id: str, keys: tuple[str, ...], user_input: dict[str, Any] | None
+    ) -> config_entries.ConfigFlowResult:
+        """Handle a section step with save/back actions."""
+        if user_input is not None:
+            action = user_input.get(CONF_STEP_ACTION, ACTION_SAVE)
+            if action == ACTION_BACK:
+                return await self.async_step_user()
+
+            self._store_step_values(keys, user_input)
+            return await self.async_step_user()
+
+        return self.async_show_form(step_id=step_id, data_schema=self._build_schema(keys))
+
+    async def async_step_common(
+        self, user_input: dict[str, Any] | None = None
+    ) -> config_entries.ConfigFlowResult:
+        """Handle common settings."""
+        return await self._handle_section_step("common", COMMON_KEYS, user_input)
+
+    async def async_step_voice(
+        self, user_input: dict[str, Any] | None = None
+    ) -> config_entries.ConfigFlowResult:
+        """Handle voice settings."""
+        return await self._handle_section_step("voice", VOICE_KEYS, user_input)
+
+    async def async_step_messaging(
+        self, user_input: dict[str, Any] | None = None
+    ) -> config_entries.ConfigFlowResult:
+        """Handle messaging settings."""
+        return await self._handle_section_step("messaging", MESSAGING_KEYS, user_input)
+
+    async def async_step_done(
+        self, user_input: dict[str, Any] | None = None
+    ) -> config_entries.ConfigFlowResult:
+        """Finalize configuration."""
+        if any(not self._data.get(key) for key in REQUIRED_COMMON_KEYS):
+            return self.async_show_form(
+                step_id="common",
+                data_schema=self._build_schema(COMMON_KEYS),
+                errors={"base": "missing_required_common"},
             )
 
-        return self.async_show_form(step_id="user", data_schema=STEP_USER_SCHEMA)
+        unique_id = hashlib.sha256(self._data[CONF_API_KEY].encode("utf-8")).hexdigest()
+        await self.async_set_unique_id(unique_id)
+        self._abort_if_unique_id_configured()
+
+        return self.async_create_entry(
+            title=DEFAULT_NAME,
+            data={
+                **self._data,
+                CONF_WEBHOOK_ID: secrets.token_hex(16),
+            },
+        )

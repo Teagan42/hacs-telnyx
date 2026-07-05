@@ -3,19 +3,56 @@
     "abort": {
       "already_configured": "This Telnyx account is already configured."
     },
+    "error": {
+      "missing_required_common": "Set API key and webhook public key before finishing."
+    },
     "step": {
       "user": {
         "title": "Connect Telnyx",
-        "description": "Configure Telnyx defaults for messaging, voice, and webhook automations.",
+        "description": "Choose which Telnyx settings to configure.",
+        "menu_options": {
+          "common": "Common settings",
+          "voice": "Voice settings",
+          "messaging": "Messaging settings",
+          "done": "Done"
+        }
+      },
+      "common": {
+        "title": "Common settings",
+        "description": "Configure required account settings.",
         "data": {
           "api_key": "API key",
           "webhook_public_key": "Webhook public key",
+          "step_action": "Action"
+        },
+        "data_description": {
+          "step_action": "Use 'save' to keep changes or 'back' to return without saving."
+        }
+      },
+      "voice": {
+        "title": "Voice settings",
+        "description": "Configure optional voice defaults.",
+        "data": {
           "call_control_connection_id": "Call Control connection ID",
+          "default_voice_from": "Default voice from number",
+          "default_voice_to": "Default voice to number",
+          "step_action": "Action"
+        },
+        "data_description": {
+          "step_action": "Use 'save' to keep changes or 'back' to return without saving."
+        }
+      },
+      "messaging": {
+        "title": "Messaging settings",
+        "description": "Configure optional messaging defaults.",
+        "data": {
           "messaging_profile_id": "Messaging profile ID",
           "default_messaging_from": "Default messaging from number",
           "default_messaging_to": "Default messaging to number",
-          "default_voice_from": "Default voice from number",
-          "default_voice_to": "Default voice to number"
+          "step_action": "Action"
+        },
+        "data_description": {
+          "step_action": "Use 'save' to keep changes or 'back' to return without saving."
         }
       }
     }
